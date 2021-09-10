@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/template/layout.xhtml">
+
+	<ui:define name="title">
+		<title>${tradingpartnerControllerBean.title}</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<h1>${tradingpartnerControllerBean.title}</h1>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="card">
+				<p:growl id="messages" showDetail="true" />
+				<p:toolbar>
+					<p:toolbarGroup>
+						<p:commandButton value="New" icon="pi pi-plus"
+							actionListener="#{tradingpartnerControllerBean.openNew}"
+							update=":form:manage-code-content"
+							oncomplete="PF('#{tradingpartnerControllerBean.dialogName}').show()"
+							styleClass="ui-button-success" style="margin-right: 0.3em">
+							<p:resetInput target=":form:manage-code-content" />
+						</p:commandButton>
+						<p:commandButton
+							value="#{tradingpartnerControllerBean.deleteButtonMessage}"
+							id="#{tradingpartnerControllerBean.deleteCodesButton}"
+							icon="pi pi-trash"
+							actionListener="#{tradingpartnerControllerBean.deleteSelected}"
+							styleClass="ui-button-danger" style="margin-left: 0.3em"
+							disabled="#{!tradingpartnerControllerBean.hasSelectedCodes()}"
+							update="@this">
+							<p:confirm header="Confirmation"
+								message="Delete the selected codes?"
+								icon="pi pi-exclamation-triangle" />
+						</p:commandButton>
+					</p:toolbarGroup>
+					<p:toolbarGroup align="right">
+						<p:commandButton value="Export" icon="pi pi-upload"
+							styleClass="ui-button-help" ajax="false">
+							<p:dataExporter type="xls"
+								target="#{tradingpartnerControllerBean.dataTableName}"
+								fileName="${tradingpartnerControllerBean.title}" />
+						</p:commandButton>
+					</p:toolbarGroup>
+				</p:toolbar>
+
+				<p:dataTable id="#{tradingpartnerControllerBean.dataTableName}"
+					widgetVar="dtCodes" 
+					var="curtps"
+					value="#{tradingpartnerControllerBean.lstTP}" reflow="true"
+					styleClass="products-table"
+					selection="#{tradingpartnerControllerBean.lstSelectdTP}"
+					rowKey="#{curtps.icpcode}" 
+					paginator="true" 
+					rows="20" stickyHeader="true" stripedRows="true" 
+					rowSelectMode="add" 
+					size="small" 
+					paginatorPosition="bottom">
+					<f:facet name="header">
+						<span style="font-weight: bold">${tradingpartnerControllerBean.title}</span>
+					</f:facet>
+					<p:ajax event="rowSelect" update=":form:#{tradingpartnerControllerBean.deleteCodesButton}" />
+					<p:ajax event="rowUnselect" update=":form:#{tradingpartnerControllerBean.deleteCodesButton}" />
+					<p:ajax event="rowSelectCheckbox" update=":form:#{tradingpartnerControllerBean.deleteCodesButton}" />
+					<p:ajax event="rowUnselectCheckbox" update=":form:#{tradingpartnerControllerBean.deleteCodesButton}" />
+					<p:ajax event="toggleSelect" update=":form:#{tradingpartnerControllerBean.deleteCodesButton}" />
+
+					<p:column headerText="Select" selectionMode="multiple" exportable="false" width="10%">
+					</p:column>
+
+					<p:column headerText="Trading Partner Code" sortBy="#{curtps.icpcode}" filterBy="#{curtps.icpcode}">
+						<h:outputText value="#{curtps.icpcode}" />
+					</p:column>
+					
+					<p:column headerText="Trading Partner Type" sortBy="#{curtps.tptype}" filterBy="#{curtps.tptype}">
+						<h:outputText value="#{curtps.tptype}" />
+					</p:column>
+
+					<p:column headerText="ICP Id"  sortBy="#{curtps.icpid}" filterBy="#{curtps.icpid}">
+						<h:outputText value="#{curtps.icpid}" />
+					</p:column>
+
+					<p:column headerText="Description"  sortBy="#{curtps.icpdesc}" filterBy="#{curtps.icpdesc}">
+						<h:outputText value="#{curtps.icpdesc}" />
+					</p:column>
+
+					<p:column headerText="Actions" exportable="false" width="10%">
+						<p:commandButton icon="pi pi-pencil"
+							update=":form:manage-code-content"
+							oncomplete="PF('#{tradingpartnerControllerBean.dialogName}').show()"
+							styleClass="edit-button rounded-button ui-button-success"
+							style="margin-right: 0.3em" 
+							process="@this">
+							<f:setPropertyActionListener value="#{curtps}" target="#{tradingpartnerControllerBean.curtp}" />
+							<p:resetInput target=":form:manage-code-content" />
+						</p:commandButton>
+
+						<p:commandButton class="ui-button-warning rounded-button"
+							icon="pi pi-trash" 
+							process="@this" 
+							style="margin-left: 0.3em"
+							oncomplete="PF('deleteCodeDialog').show()">
+							<f:setPropertyActionListener value="#{curtps}" target="#{tradingpartnerControllerBean.curtp}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="User ID" sortBy="#{curtps.userid}" filterBy="#{curtps.userid}">
+                        <h:outputText value="#{curtps.userid}" />
+                    </p:column>
+                    <p:column headerText="Modified" sortBy="#{curtps.modified}" filterBy="#{curtps.modified}">
+                        <h:outputText value="#{curtps.modified}" >                        
+                        </h:outputText>
+                    </p:column>
+				</p:dataTable>
+
+				<!-- This form is for add new o modify a code -->
+
+				<p:dialog header="Product Details" showEffect="fade" modal="true"
+					widgetVar="#{tradingpartnerControllerBean.dialogName}"
+					responsive="true">
+					<p:outputPanel id="manage-code-content" class="ui-fluid">
+						<p:outputPanel
+							rendered="#{not empty tradingpartnerControllerBean.curtp}">
+							<div class="p-field">
+								<p:outputLabel for="ICPCode">ICPCode (maxlength 25 )</p:outputLabel>
+								<p:inputText id="ICPCode" value="#{tradingpartnerControllerBean.curtp.icpcode}" maxlength="25" required="true" />
+							</div>
+							<div class="p-field p-col-12 p-md-4">
+								<p:outputLabel for="tptype" value="Type" />
+								<p:selectOneMenu id="tptype"
+									value="#{tradingpartnerControllerBean.curtp.tptype}">
+									<f:selectItem itemLabel="Select One" itemValue="" />
+									<f:selectItems value="#{tptypesControllerBean.lsttpType}"
+										var="item" itemLabel="#{item.tptype}"
+										itemValue="#{item.tptype}" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field">
+								<p:outputLabel for="ICPID">ICPID   (maxlength 5) </p:outputLabel>
+								<p:inputText id="ICPID" value="#{tradingpartnerControllerBean.curtp.icpid}" maxlength="5" required="true" />
+							</div>
+							<div class="p-field">
+								<p:outputLabel for="icpdesc">Description (maxlength 50)</p:outputLabel>
+								<p:inputText id="icpdesc"
+									value="#{tradingpartnerControllerBean.curtp.icpdesc}" maxlength="50"
+									required="true" />
+							</div>
+						</p:outputPanel>
+					</p:outputPanel>
+					<f:facet name="footer">
+						<p:commandButton value="Save" 
+							id="btnSave"
+							icon="pi pi-check"
+							actionListener="#{tradingpartnerControllerBean.save}"
+							update="manage-code-content" 
+							process="manage-code-content @this" />
+						<p:commandButton value="Cancel" 
+							id="btnCancel"
+							icon="pi pi-times"
+							onclick="PF('#{tradingpartnerControllerBean.dialogName}').hide()"
+							class="ui-button-secondary" />
+					</f:facet>
+				</p:dialog>
+
+				<!-- end form -->
+
+				<p:confirmDialog widgetVar="deleteCodeDialog" 
+					showEffect="fade"
+					width="300" 
+					message="Delete the code?" 
+					header="Confirm"
+					severity="warn">
+					<p:commandButton value="Yes" 
+						id="btnDeleteYes"
+						icon="pi pi-check"
+						actionListener="#{tradingpartnerControllerBean.delete}"
+						process="@this" 
+						oncomplete="PF('deleteCodeDialog').hide()" />
+					<p:commandButton value="No" 
+						id="btnDeleteNo"
+						type="button"
+						styleClass="ui-button-secondary" 
+						icon="pi pi-times"
+						onclick="PF('deleteCodeDialog').hide()" />
+				</p:confirmDialog>
+
+				<p:confirmDialog global="true" showEffect="fade" width="300">
+					<p:commandButton value="Yes" id="btnYes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+					<p:commandButton value="No" id="btnNo" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times" />
+				</p:confirmDialog>
+
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

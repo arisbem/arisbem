@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title><h:outputText value="Main Menu"/></title>
+</h:head>
+<h:body>
+<ui:composition>
+<div class="card">
+	<h:form id="menuFormId" prependId="false">
+		<p:growl id="messages" />
+		<p:menubar>
+			<p:submenu label="RollUP" icon="fa fa-refresh ">
+				<p:menuitem value="RollUp Process" icon="fa fa-circle-o-notch fa-spin fa-lg fa-fw" action="#{menuController.rollup}" rendered="#{menuController.rollUpRole}" ajax="false"/>
+				<p:menuitem value="RollUP History" icon="fa fa-history" action="#{menuController.rolluphist}" rendered="#{menuController.rolluphistRole}" ajax="false"/>
+				<p:menuitem value="Manual Entries" icon="fa fa-check-circle-o" action="#{menuController.manualentries}" rendered="#{menuController.policiesRole}" ajax="false"/> 
+				<p:menuitem value="Manual Entries History" icon="pi pi-bars" action="#{menuController.manualentrieshist}" rendered="#{menuController.manualentrieshistRole}" ajax="false"/>
+			</p:submenu>
+			<p:submenu label="Catalogs Sets" icon="pi pi-file">
+				<p:menuitem value="HFMCodes" icon="pi pi-table" action="#{menuController.hfmcodes}" rendered="#{menuController.hfmcodesRole}" ajax="false"/>
+				<p:menuitem value="HFMCodes-Oracle Accounts" icon="pi pi-id-card" action="#{menuController.hfmcodesOA}" rendered="#{menuController.hfmcodesOARole}" ajax="false"/>
+				<p:menuitem value="Trading Partner Types" icon="fa fa-users fa-fw" action="#{menuController.hfmcodestypes}" rendered="#{menuController.hfmcodestypesRole}" ajax="false"/>
+				<p:menuitem value="Trading Partners" icon="fa fa-handshake-o fa-fw" action="#{menuController.partners}" rendered="#{menuController.partnersRole}" ajax="false"/>
+				<p:separator/>
+				<p:menuitem value="Payables Accounts" icon="fa fa-money fa-fw" action="#{menuController.payablesAccounts}" rendered="#{menuController.payablesAccountsRole}" ajax="false"/>
+				<p:menuitem value="Receivables Accounts" icon="pi pi-dollar" action="#{menuController.receivablesAccounts}" rendered="#{menuController.receivablesAccountsRole}" ajax="false"/>
+				<p:menuitem value="Source Accounts" icon="pi pi-dollar" action="#{menuController.definedaccounts}" rendered="#{menuController.definedaccountsRole}" ajax="false"/>
+			</p:submenu>
+			
+			<p:submenu label="Validations Set" icon="pi pi-check-circle">
+				<p:menuitem value="Match Accounts" icon="fa fa-clone" action="#{menuController.matchAccounts}" rendered="#{menuController.matchAccountsRole}" ajax="false" />
+				<p:menuitem value="Reclassifications" icon="pi pi-sliders-h" action="#{menuController.reclassification}" rendered="#{menuController.reclassificationRole}" ajax="false"/>
+				<p:separator/>
+				<p:menuitem value="HFM Data by Company" icon="pi pi-chart-line" action="#{menuController.dsvscompany}" rendered="#{menuController.dsvscompanyRole}" ajax="false"/>
+				<p:menuitem value="Trading Partners Exceptions" icon="pi pi-briefcase" action="#{menuController.rollupexceptions}" rendered="#{menuController.rollupexceptionsRole}" ajax="false"/>
+			</p:submenu>			
+			<p:menuitem value="Administration" icon="pi pi-cog" action="#{menuController.admin}" rendered="#{menuController.adminRole}" ajax="false" />
+
+			<f:facet name="options">
+				<p:commandButton value="logout #{menuController.username}" icon="pi pi-sign-out" ajax="false" action="#{menuController.logout}"/>
+				
+			</f:facet>
+		</p:menubar>
+		<p:confirmPopup message="Are you sure you want to exit?" icon="pi question-circle" id="logoutPopUpId" showEffect="fade" hideEffect="explode" widgetVar="wvLogoutPopUp">
+			<p:commandButton value="Yes" icon="pi pi-check" action="#{menuController.logout}" oncomplete="PF('wvLogoutPopUp').hide()" />
+			<p:commandButton value="No"  icon="pi pi-times" oncomplete="PF('wvLogoutPopUp').hide()" />
+		</p:confirmPopup>
+	</h:form>
+</div>
+</ui:composition>
+</h:body>
+</html>
