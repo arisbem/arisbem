@@ -13,7 +13,7 @@ import com.neoris.tcl.models.ViewSegmentCompany;
 import com.neoris.tcl.models.viewmanualentries;
 import com.sun.el.stream.Optional;
 
-import oracle.security.crypto.core.MAC;
+
 
 @Repository
 public interface IHfmRollupEntriesDao extends JpaRepository<HfmRollupEntries, Long> {

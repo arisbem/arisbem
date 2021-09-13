@@ -9,7 +9,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Subselect;
 
 @Entity
-@Subselect(value = "select num,segment1 from viewcompanyacronym")
+//@Subselect(value = "select num,segment1 from viewcompanyacronym")
+@Table(name ="viewcompanyacronym")
 public class ViewSegmentCompany implements Serializable {
 	
 	private static final long serialVersionUID = 170999999999999991L;
