@@ -24,7 +24,7 @@ public class SetDefinedAccountsService  implements ISetDefinedAccountsService{
 	
 
 		@Override
-	public Optional<SetDefinedAccounts> findById(SetDefinedAccountsPK id) {
+	public Optional<SetDefinedAccounts> findById(Long id) {
 		return data.findById(id);
 	}
 		
@@ -54,8 +54,8 @@ public class SetDefinedAccountsService  implements ISetDefinedAccountsService{
 		}
 
 		@Override
-		public List<SetDefinedAccounts> findByIdCompanyid(int companyid) {
-			return (List<SetDefinedAccounts>) data.findByIdCompanyid(companyid);
+		public List<SetDefinedAccounts> findByCompanyid(int companyid) {
+			return (List<SetDefinedAccounts>) data.findByCompanyid(companyid);
 		}
 
 		

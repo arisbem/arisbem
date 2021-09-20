@@ -58,14 +58,17 @@
                     <p:column headerText="Company" sortBy="#{currentid.segment1}" filterBy="#{currentid.segment1}">
                         <h:outputText value="#{currentid.segment1}" />
                     </p:column>
-                    <p:column headerText="Partner Id" sortBy="#{currentid.id.partnerid}" filterBy="#{currentid.id.partnerid}">
-                        <h:outputText value="#{currentid.id.partnerid}" />
+                    <p:column headerText="Partner Id" sortBy="#{currentid.partnerid}" filterBy="#{currentid.partnerid}">
+                        <h:outputText value="#{currentid.partnerid}" />
                     </p:column>
-                    <p:column headerText="Cost Center" sortBy="#{currentid.id.costcenter}" filterBy="#{currentid.id.costcenter}">
-                        <h:outputText value="#{currentid.id.costcenter}" />
+                    <p:column headerText="Cost Center" sortBy="#{currentid.costcenter}" filterBy="#{currentid.costcenter}">
+                        <h:outputText value="#{currentid.costcenter}" />
                     </p:column>
-                    <p:column headerText="Oracle Account" sortBy="#{currentid.id.accountid}" filterBy="#{currentid.id.accountid}">
-                        <h:outputText value="#{currentid.id.accountid}" />
+                    <p:column headerText="Oracle Account" sortBy="#{currentid.accountid}" filterBy="#{currentid.accountid}">
+                        <h:outputText value="#{currentid.accountid}" />
+                    </p:column>
+                    <p:column headerText="Source" sortBy="#{currentid.source}" filterBy="#{currentid.source}">
+                        <h:outputText value="#{currentid.source}" />
                     </p:column>
                     <p:column headerText="Actions" exportable="false" width="10%">
                         <p:commandButton icon="pi pi-pencil" update=":form:manage-code-content" oncomplete="PF('#{hfmexceptionsControllerBean.dialogName}').show()" styleClass="edit-button rounded-button ui-button-success" style="margin-right: 0.3em" process="@this">
@@ -93,14 +96,14 @@
                         <p:outputPanel rendered="#{not empty hfmexceptionsControllerBean.curExcep}">
                             <div class="p-field">
                                 <p:outputLabel for="companyid">Company Id</p:outputLabel>
-                                <p:selectOneMenu id="companyid" value="#{hfmexceptionsControllerBean.curExcep.id.companyid}" filter="true" filterMatchMode="startsWith">
+                                <p:selectOneMenu id="companyid" value="#{hfmexceptionsControllerBean.curExcep.companyid}" filter="true" filterMatchMode="startsWith">
                                     <f:selectItems value="#{hfmexceptionsControllerBean.lstcompany}" var="itemp" itemLabel="#{itemp.entity}" itemValue="#{itemp.companyid}" />
                                     <f:ajax event="change" listener="#{hfmexceptionsControllerBean.companyidChange}" execute="@this" render=":form:accountid :form:suppno :form:custno"/>
                                 </p:selectOneMenu>
                             </div>
                           <div class="p-field">
                                 <p:outputLabel for="@next">Cost Center</p:outputLabel>
-                                <p:selectOneMenu id="costcenter" editable="true" value="#{hfmexceptionsControllerBean.curExcep.id.costcenter}" filter="true" filterMatchMode="startsWith">
+                                <p:selectOneMenu id="costcenter" editable="true" value="#{hfmexceptionsControllerBean.curExcep.costcenter}" filter="true" filterMatchMode="startsWith">
                                     <f:selectItem itemLabel="Select One" itemValue="" />
                                     <f:selectItems value="#{hfmexceptionsControllerBean.lstCC}" var="costc" itemLabel="#{costc.costcenter}" itemValue="#{costc.costcenter}" />
                                     <f:ajax event="change" listener="#{hfmexceptionsControllerBean.costcenterChange}" execute="@this" render=":form:accountid"/>
@@ -108,7 +111,7 @@
                             </div>
 	                            <div class="p-field">
 	                                <p:outputLabel for="@next" value="Oracle Account" />
-	                                <p:selectOneMenu id="accountid" editable="true" value="#{hfmexceptionsControllerBean.curExcep.id.accountid}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Oracle  Account is requiered">
+	                                <p:selectOneMenu id="accountid" editable="true" value="#{hfmexceptionsControllerBean.curExcep.accountid}" filter="true" filterMatchMode="startsWith" required="true" requiredMessage="Oracle  Account is requiered">
 	                                    <f:selectItems value="#{hfmexceptionsControllerBean.lstOrcl}" var="accid" itemLabel="#{accid.oracleacct}" itemValue="#{accid.oracleacct}" />
 	                                </p:selectOneMenu>
 	                                <p:message for="@previous"/>
@@ -117,7 +120,8 @@
 	                           
 	                            <div class="p-field">
 	                                <p:outputLabel for="source" value="Source Type" />
-	                                <p:selectOneMenu id="source" value="#{hfmexceptionsControllerBean.vsource}">
+	                                <p:selectOneMenu id="source" value="#{hfmexceptionsControllerBean.curExcep.source}">
+	                                	<f:selectItem itemLabel="Select One" itemValue="" />
 	                                    <f:selectItem itemLabel="Receivables" itemValue="Receivables" />
 	                                    <f:selectItem itemLabel="Payables" itemValue="Payables" />
 	                                    <f:ajax event="change" listener="#{hfmexceptionsControllerBean.companyidChange}" execute="@this" render=":form:suppno form:custno"/>
@@ -125,7 +129,7 @@
 	                            </div>
 	                            <div class="p-field">
 	                                <p:outputLabel for="custno" value="Customer No." />
-	                                <p:selectOneMenu id="custno" value="#{hfmexceptionsControllerBean.vpartnerid}" filter="true" filterMatchMode="startsWith">
+	                                <p:selectOneMenu id="custno" value="#{hfmexceptionsControllerBean.curExcep.partnerid}" filter="true" filterMatchMode="startsWith">
 	                                    <f:selectItem itemLabel="Select One" itemValue="" />
 	                                    <f:selectItems value="#{hfmexceptionsControllerBean.lstCustno}" var="itemc" itemLabel="#{itemc.custno}" itemValue="#{itemc.custno}" />
 	                                </p:selectOneMenu>
@@ -133,7 +137,7 @@
 	                            
 	                            <div class="p-field">
 	                                <p:outputLabel for="suppno" value="Supplier No." />
-	                                <p:selectOneMenu id="suppno" value="#{hfmexceptionsControllerBean.vpartnerids}" filter="true" filterMatchMode="startsWith">
+	                                <p:selectOneMenu id="suppno" value="#{hfmexceptionsControllerBean.curExcep.partnerid}" filter="true" filterMatchMode="startsWith">
 	                                    <f:selectItem itemLabel="Select One" itemValue="" />
 	                                    <f:selectItems value="#{hfmexceptionsControllerBean.lstSuppno}" var="items" itemLabel="#{items.suppliernum}" itemValue="#{items.suppliernum}" />
 	                                </p:selectOneMenu>

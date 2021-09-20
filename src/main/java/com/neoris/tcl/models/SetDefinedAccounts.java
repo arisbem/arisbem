@@ -8,6 +8,10 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,14 +23,22 @@ import javax.persistence.Transient;
 public class SetDefinedAccounts implements Serializable {
 	private static final long serialVersionUID = 6102853690474970823L;
 
-	@EmbeddedId
-	private SetDefinedAccountsPK id;
+//	@EmbeddedId
+//	private SetDefinedAccountsPK id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id")
+	@SequenceGenerator(sequenceName = "SEQDEFACC", allocationSize = 1, name = "id")
+	private Long id;
 	private String icpcode;
 	private String userid;
 	private String cperiod;
 	
-	
+	private String accountid;
+	private String accountidfin;
+	private int companyid;
+	private String costcenter;
+	private String source;
     
 	@Column(name = "modified",columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false)
 	@Temporal(TemporalType.DATE)
@@ -36,22 +48,35 @@ public class SetDefinedAccounts implements Serializable {
 	private String uuid;
 
 	public SetDefinedAccounts() {
-		this.setId(new SetDefinedAccountsPK());
+		//this.setId(new SetDefinedAccountsPK());
 		this.uuid = UUID.randomUUID().toString();
 	}
 
-	public SetDefinedAccounts(SetDefinedAccountsPK id, String icpcode, String userid, String cperiod) {
+
+
+	public SetDefinedAccounts(Long id, String icpcode, String userid, String cperiod, String accountid,
+			String accountidfin, int companyid, String costcenter, String source, Date modified, String uuid) {
+		
 		this.id = id;
 		this.icpcode = icpcode;
 		this.userid = userid;
 		this.cperiod = cperiod;
+		this.accountid = accountid;
+		this.accountidfin = accountidfin;
+		this.companyid = companyid;
+		this.costcenter = costcenter;
+		this.source = source;
+		this.modified = modified;
+		this.uuid = uuid;
 	}
 
-	public SetDefinedAccountsPK getId() {
+
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(SetDefinedAccountsPK id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -95,11 +120,51 @@ public class SetDefinedAccounts implements Serializable {
 	}
 	
 
-	 
+	
+
+	public String getAccountid() {
+		return accountid;
+	}
+
+	public void setAccountid(String accountid) {
+		this.accountid = accountid;
+	}
+
+	public String getAccountidfin() {
+		return accountidfin;
+	}
+
+	public void setAccountidfin(String accountidfin) {
+		this.accountidfin = accountidfin;
+	}
+
+	public int getCompanyid() {
+		return companyid;
+	}
+
+	public void setCompanyid(int companyid) {
+		this.companyid = companyid;
+	}
+
+	public String getCostcenter() {
+		return costcenter;
+	}
+
+	public void setCostcenter(String costcenter) {
+		this.costcenter = costcenter;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( uuid);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -111,17 +176,18 @@ public class SetDefinedAccounts implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		SetDefinedAccounts other = (SetDefinedAccounts) obj;
-		return Objects.equals(uuid, other.uuid);
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
 		return "SetDefinedAccounts [id=" + id + ", icpcode=" + icpcode + ", userid=" + userid + ", cperiod=" + cperiod
-				+ ", modified=" + modified + ", uuid=" + uuid + "]";
+				+ ", accountid=" + accountid + ", accountidfin=" + accountidfin + ", companyid=" + companyid
+				+ ", costcenter=" + costcenter + ", source=" + source + ", modified=" + modified + ", uuid=" + uuid
+				+ "]";
 	}
 
 	
-
 	
 
 }

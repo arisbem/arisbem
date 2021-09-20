@@ -6,12 +6,15 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+
 
 /**
  * The persistent class for the set_reclassif_accounts database table.
@@ -26,48 +29,149 @@ public class SetReclassifAccounts implements Serializable {
 	 */
 	private static final long serialVersionUID = 4212642143691598086L;
 
-	@EmbeddedId
-	private SetReclassifAccountsPK id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id")
+	@SequenceGenerator(sequenceName = "SEQRECLASIF", allocationSize = 1, name = "id")
+	private Long id;
 	private String userid;
 	private String segment1;
-	@Transient
-	private String uuid;
-	
+
 	@Column(name = "modified",columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false)
 	@Temporal(TemporalType.DATE)
 	private Date modified;
 
+	private String hfmcodeorig;
+	private String hfmcodedest;
+	private String costcenter;
+	private String accountidini;
+	private String accountidfin;
+	private String partnerid;
+	private int companyid;
+	private String source;
 	
 	public SetReclassifAccounts() {
-	    this.setId(new SetReclassifAccountsPK());
-	    this.uuid = UUID.randomUUID().toString();
+	   
 	}
 
 	
 	
 
 
-	public SetReclassifAccounts(SetReclassifAccountsPK id, String userid, String segment1, String uuid) {
-
+	public SetReclassifAccounts(Long id, String userid, String segment1, Date modified, String hfmcodeorig,
+			String hfmcodedest, String costcenter, String accountidini, String accountidfin, String partnerid,
+			int companyid, String source) {
+		
 		this.id = id;
 		this.userid = userid;
 		this.segment1 = segment1;
-		this.uuid = uuid;
+		this.modified = modified;
+		this.hfmcodeorig = hfmcodeorig;
+		this.hfmcodedest = hfmcodedest;
+		this.costcenter = costcenter;
+		this.accountidini = accountidini;
+		this.accountidfin = accountidfin;
+		this.partnerid = partnerid;
+		this.companyid = companyid;
+		this.source = source;
 	}
 
 
 
 
 
-	public SetReclassifAccountsPK getId() {
-		return this.id;
+	public String getSource() {
+		return source;
 	}
 
-	
-	
-	public void setId(SetReclassifAccountsPK id) {
+
+
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
 		this.id = id;
 	}
+
+
+	public String getHfmcodeorig() {
+		return hfmcodeorig;
+	}
+
+
+	public void setHfmcodeorig(String hfmcodeorig) {
+		this.hfmcodeorig = hfmcodeorig;
+	}
+
+
+	public String getHfmcodedest() {
+		return hfmcodedest;
+	}
+
+
+	public void setHfmcodedest(String hfmcodedest) {
+		this.hfmcodedest = hfmcodedest;
+	}
+
+
+	public String getCostcenter() {
+		return costcenter;
+	}
+
+
+	public void setCostcenter(String costcenter) {
+		this.costcenter = costcenter;
+	}
+
+
+	public String getAccountidini() {
+		return accountidini;
+	}
+
+
+	public void setAccountidini(String accountidini) {
+		this.accountidini = accountidini;
+	}
+
+
+	public String getAccountidfin() {
+		return accountidfin;
+	}
+
+
+	public void setAccountidfin(String accountidfin) {
+		this.accountidfin = accountidfin;
+	}
+
+
+	public String getPartnerid() {
+		return partnerid;
+	}
+
+
+	public void setPartnerid(String partnerid) {
+		this.partnerid = partnerid;
+	}
+
+
+	public int getCompanyid() {
+		return companyid;
+	}
+
+
+	public void setCompanyid(int companyid) {
+		this.companyid = companyid;
+	}
+
 
 	public String getUserid() {
 		return userid;
@@ -86,13 +190,6 @@ public class SetReclassifAccounts implements Serializable {
 		this.segment1 = segment1;
 	}
 
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	
 	
@@ -107,16 +204,10 @@ public class SetReclassifAccounts implements Serializable {
 
 
 	@Override
-	public String toString() {
-		return "SetReclassifAccounts [id=" + id + ", userid=" + userid + ", segment1=" + segment1 + ", uuid=" + uuid
-				+ ", modified=" + modified + "]";
-	}
-
-
-	@Override
 	public int hashCode() {
-		return Objects.hash( id, uuid);
+		return Objects.hash(id);
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -127,8 +218,23 @@ public class SetReclassifAccounts implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		SetReclassifAccounts other = (SetReclassifAccounts) obj;
-		return Objects.equals(id, other.id) && Objects.equals(uuid, other.uuid)				;
+		return Objects.equals(id, other.id);
 	}
+
+
+
+
+	@Override
+	public String toString() {
+		return "SetReclassifAccounts [id=" + id + ", userid=" + userid + ", segment1=" + segment1 + ", modified="
+				+ modified + ", hfmcodeorig=" + hfmcodeorig + ", hfmcodedest=" + hfmcodedest + ", costcenter="
+				+ costcenter + ", accountidini=" + accountidini + ", accountidfin=" + accountidfin + ", partnerid="
+				+ partnerid + ", companyid=" + companyid + ", source=" + source + "]";
+	}
+
+
+
+
 	
 
 	

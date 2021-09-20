@@ -63,7 +63,7 @@ public class SetReclassifAccountsController {
 	private ISetHfmCodesService serviceHfmcodes;
 
 	// private int lcompanyid;
-	private String vsource;
+	//private String vsource;
 
 	// customer view by company
 	@Autowired
@@ -84,7 +84,7 @@ public class SetReclassifAccountsController {
 	public void init() {
 		LOG.info("Initializing lstReclasssifAccounts...");
 		this.lstref = service.findAll();
-		this.vsource = "Receivables";
+		//this.vsource = "Receivables";
 		try {
 			LOG.info("Initializing Cost Centers...");
 			this.lstCC = servcc.findAll();
@@ -98,6 +98,8 @@ public class SetReclassifAccountsController {
 			this.lstHfmcodes = serviceHfmcodes.findAll();
 			LOG.info(" lstHfmcodes " + this.lstHfmcodes.size());
 
+			
+			
 		} catch (Exception e) {
 			LOG.error("init lstCC ERRor -> {}", e.getMessage(), e);
 		}
@@ -116,58 +118,70 @@ public class SetReclassifAccountsController {
 
 	public void openNew() {
 		LOG.info("new");
-		
+		this.vpartnerid=null;
+		this.vpartnerids=null;
 		this.curracc = new SetReclassifAccounts();
 		if (lstcompany.size() > 0) {
-			curracc.getId().setCompanyid(lstcompany.get(0).getCompanyid().intValue());
+			curracc.setCompanyid(lstcompany.get(0).getCompanyid().intValue());
 		}
 		if (lstCC.size() > 0) {
-			curracc.getId().setCostcenter(lstCC.get(0).getCostcenter());
+			curracc.setCostcenter(lstCC.get(0).getCostcenter());
 		}
 
 		// force lo load "lstOrcl" list
 		this.costcenterChange();
+		
 
 		if (lstOrcl.size() > 0) {
-			curracc.getId().setAccountidini(lstOrcl.get(0).getOracleacct());
-			curracc.getId().setAccountidfin(lstOrcl.get(0).getOracleacct());
+			curracc.setAccountidini(lstOrcl.get(0).getOracleacct());
+			curracc.setAccountidfin(lstOrcl.get(0).getOracleacct());
 		}
 
 		this.curracc.setUserid(this.user.getUsername());
-		this.vsource = "Receivables";
-		LOG.info("[openNew] => curracc = {}, this.vsource {}", curracc,this.vsource);
+		//this.vsource = "Receivables";
+		LOG.info("[openNew] => curracc = {}, this.vsource {}", curracc,this.curracc.getSource());
 
 		
-		lstCustno = servicecust.findByOrganizationid(curracc.getId().getCompanyid());
+		lstCustno = servicecust.findByOrganizationid(curracc.getCompanyid());
 		
 		LOG.info(" lstCustno " + this.lstCustno.size());
-		//lstSuppno = servicessupp.findByOrganizationid(curracc.getId().getCompanyid());
+		//lstSuppno = servicessupp.findByOrganizationid(curracc.getCompanyid());
 	}
 
 	/**
 	 * 
 	 */
 	public void save() {
-		if (this.vsource.equals("Receivables")) {
-			this.curracc.getId().setPartnerid(this.vpartnerid);
-			}else {
-				this.curracc.getId().setPartnerid(this.vpartnerids);
-			}
-		LOG.info("Entering to save Account => {}", this.curracc);
 		
-		Long companyId = new Long(this.curracc.getId().getCompanyid());
+		/*
+		if (this.curracc.getSource().equals("Receivables")) {
+			this.curracc.setPartnerid(this.vpartnerid);
+			}else {
+				this.curracc.setPartnerid(this.vpartnerids);
+			}
+		
+		  */
+		LOG.info("Entering to save Account => {}", this.curracc);
+	
+	
+		Long companyId = new Long(this.curracc.getCompanyid());
 		this.curracc.setUserid(user.getUsername());
 		this.curracc.setSegment1(getSegment1FromList(companyId));
 		this.curracc.setUserid(user.getUsername());
-		
-		
-		
+	
+	try {	
 		this.curracc = service.save(curracc);
 		this.lstref = service.findAll();
 		Functions.addInfoMessage("Succes", "Accounts saved");
 		PrimeFaces.current().executeScript("PF('" + getDialogName() + "').hide()");
 		PrimeFaces.current().ajax().update("form:messages", "form:" + getDataTableName());
 		PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+	}catch (Exception e) {
+		LOG.error("save  Error -> {}", e.getMessage(), e);
+		Functions.addWarnMessage("Warning", "Record already exists!");
+		PrimeFaces.current().ajax().update("form:messages");
+	}
+	
 	}
 
 	/**
@@ -270,11 +284,27 @@ public class SetReclassifAccountsController {
 	public void setCurracc(SetReclassifAccounts curracc) {
 		this.curracc = curracc;
 		LOG.info("[setCurracc] => curracc = {}", curracc);
-		this.vsource = "Receivables";
-		LOG.info("[setCurracc] => curracc = {}, this.vsource {}", curracc,this.vsource);
-		lstCustno = servicecust.findByOrganizationid(curracc.getId().getCompanyid());
+		//this.vsource = "Receivables";
+		LOG.info("[setCurracc] => curracc = {}, this.vsource {}", curracc,this.curracc.getSource());
+		if (this.curracc.getSource().equals("Receivables")) {
+			lstCustno = servicecust.findByOrganizationid(this.curracc.getCompanyid());
+			lstSuppno=null;
+			this.vpartnerid=this.curracc.getPartnerid();
+			this.vpartnerids=null;
+			LOG.info("[setCurracc]  return lstCustno con items => {}",
+					lstCustno != null ? lstCustno.size() : "is null");
+			
+			}else {
+				lstSuppno = servicessupp.findByOrganizationid(this.curracc.getCompanyid());
+				lstCustno =null;
+				this.vpartnerids=this.curracc.getPartnerid();
+				this.vpartnerid=null;
+				LOG.info("[setCurracc]  return lstSuppno con items => {}",
+						lstSuppno != null ? lstSuppno.size() : "is null");
+			}
+		//lstCustno = servicecust.findByOrganizationid(curracc.getCompanyid());
 		
-		LOG.info("[setCurracc] => lstCustno " + this.lstCustno.size());
+		//LOG.info("[setCurracc] => lstCustno " + this.lstCustno.size());
 	}
 
 	public List<HfmOracleAcc> getLstOrcl() {
@@ -309,41 +339,20 @@ public class SetReclassifAccountsController {
 		this.user = user;
 	}
 
-//	public int getLcompanyid() {
-//		return lcompanyid;
-//	}
-//
-//	public void setLcompanyid(int lcompanyid) {
-//		this.lcompanyid = lcompanyid;
-//		LOG.info("[setLcompanyid] Receive companyid = {}", lcompanyid);
-//	}
-
+/*
 	public String getVsource() {
 		return vsource;
 	}
 
 	public void setVsource(String vsource) {
 		this.vsource = vsource;
-		int lcompanyid = this.curracc.getId().getCompanyid();
+		int lcompanyid = this.curracc.getCompanyid();
 		
 		LOG.info("setvsource {}, lcompanyid {} ", this.vsource, lcompanyid);
 		
-		/*
-		if (this.vsource.equals("Receivables")) {
-			lstCustno = servicecust.findByOrganizationid(lcompanyid);
-			lstSuppno=null;
-			LOG.info("[setVsource]  return lstCustno con items => {}",
-					lstCustno != null ? lstCustno.size() : "is null");
-			
-			}else {
-				lstSuppno = servicessupp.findByOrganizationid(lcompanyid);
-				lstCustno =null;
-				LOG.info("[setVsource]  return lstSuppno con items => {}",
-						lstSuppno != null ? lstSuppno.size() : "is null");
-			}
-			*/
+		
 	}
-
+*/
 	public List<ViewPayablesSupp> getLstSuppno() {
 		return lstSuppno;
 	}
@@ -387,20 +396,20 @@ public class SetReclassifAccountsController {
 		try {
 			LOG.info("[companyidChange] => curracc = {}", curracc);
 
-			int lcompanyid = this.curracc.getId().getCompanyid();
+			int lcompanyid = this.curracc.getCompanyid();
 			
 			
-			String costCenter = this.curracc.getId().getCostcenter();
+			String costCenter = this.curracc.getCostcenter();
 			LOG.info("[companyidChange] companyid  => {},costcenter  => {}", lcompanyid, costCenter);
 
 			lstOrcl = serviceOAS.findByOrgidAndCostcenter(lcompanyid, costCenter);
 			LOG.info("[companyidChange]  return lstOrcl con items => {}", lstOrcl != null ? lstOrcl.size() : "is null");
 			
 				
-			LOG.info("[companyidChange]  this.vsource => {}", this.vsource);
+			LOG.info("[companyidChange]  source => {}", this.curracc.getSource());
 			
 			
-			if (this.vsource.equals("Receivables")) {
+			if (this.curracc.getSource().equals("Receivables")) {
 			lstCustno = servicecust.findByOrganizationid(lcompanyid);
 			lstSuppno=null;
 			LOG.info("[companyidChange]  return lstCustno con items => {}",
@@ -430,8 +439,8 @@ public class SetReclassifAccountsController {
 
 	public void costcenterChange() {
 		try {
-			int companyId = this.curracc.getId().getCompanyid();
-			String costCenter = this.curracc.getId().getCostcenter();
+			int companyId = this.curracc.getCompanyid();
+			String costCenter = this.curracc.getCostcenter();
 			LOG.info("[costcenterChange] companyid  => {},costcenter  => {}", companyId, costCenter);
 			lstOrcl = serviceOAS.findByOrgidAndCostcenter(companyId, costCenter);
 

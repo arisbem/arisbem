@@ -21,7 +21,7 @@ public class SetReclassifAccountsService implements ISetReclassifAccountsService
 	private ISetReclassifAccountsDao data;
 
 	@Override
-	public Optional<SetReclassifAccounts> findById(SetReclassifAccountsPK id) {
+	public Optional<SetReclassifAccounts> findById(Long id) {
 		return data.findById(id);
 	}
 

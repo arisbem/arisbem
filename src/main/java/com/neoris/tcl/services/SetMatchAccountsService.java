@@ -21,7 +21,7 @@ public class SetMatchAccountsService implements ISetMatchAccountsService {
 	private ISetMatchAccountsDao data;
 
 	@Override
-	public Optional<SetMatchAccounts> findById(SetMatchAccountsPK id) {
+	public Optional<SetMatchAccounts> findById(Long id) {
 		return data.findById(id);
 	}
 

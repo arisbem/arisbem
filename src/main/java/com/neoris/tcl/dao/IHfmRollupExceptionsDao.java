@@ -7,6 +7,6 @@ import com.neoris.tcl.models.HfmRollupExceptionsPK;
 
 
 
-public interface IHfmRollupExceptionsDao extends CrudRepository<HfmRollupExceptions, HfmRollupExceptionsPK>{
+public interface IHfmRollupExceptionsDao extends CrudRepository<HfmRollupExceptions, Long>{
 
 }

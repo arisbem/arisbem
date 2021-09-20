@@ -75,7 +75,7 @@ public class HfmRollupExceptionsController {
 	public void init() {
 		LOG.info("Initializing lstPArtners Exceptions...");
 		this.lstexcep = service.findAll();
-		this.vsource = "Receivables";
+		//this.vsource = "Receivables";
 		try {
 			LOG.info("Initializing Cost Centers...");
 			this.lstCC = servcc.findAll();
@@ -96,33 +96,35 @@ public class HfmRollupExceptionsController {
 
 	public void openNew(AjaxBehaviorEvent ev) {
 		LOG.info("[openNew] ev => {}", ev);
+		 PrimeFaces.current().resetInputs("form:manage-code-content");
 		openNew();
 	}
 
 	public void openNew() {
 		LOG.info("new");
 		this.curExcep = new HfmRollupExceptions();
-		
-		try {
+		this.vpartnerid=0;
+		this.vpartnerids=0;
+			try {
 			if (lstcompany.size() > 0) {
-				curExcep.getId().setCompanyid(lstcompany.get(0).getCompanyid().intValue());
+				curExcep.setCompanyid(lstcompany.get(0).getCompanyid().intValue());
 			}
 			if (lstCC.size() > 0) {
-				curExcep.getId().setCostcenter(lstCC.get(0).getCostcenter());
+				curExcep.setCostcenter(lstCC.get(0).getCostcenter());
 			}
 	
 			// force lo load "lstOrcl" list
 			this.costcenterChange();
 	
 			if (lstOrcl.size() > 0) {
-				curExcep.getId().setAccountid(lstOrcl.get(0).getOracleacct());
+				curExcep.setAccountid(lstOrcl.get(0).getOracleacct());
 				
 			}
 	
 			this.curExcep.setUserid(this.user.getUsername());
 			LOG.info("[openNew] => curExcep = {}", curExcep);
 	
-			//lstSuppno = servicessupp.findByOrganizationid(curExcep.getId().getCompanyid());
+			//lstSuppno = servicessupp.findByOrganizationid(curExcep.getCompanyid());
 		
 	} catch (Exception e) {
 		LOG.error("openNew ERRor -> {}", e.getMessage(), e);
@@ -133,26 +135,32 @@ public class HfmRollupExceptionsController {
 	 * 
 	 */
 	public void save() {
-		if (this.vsource.equals("Receivables")) {
-			this.curExcep.getId().setPartnerid(this.vpartnerid);
+		if (this.curExcep.getSource().equals("Receivables")) {
+			this.curExcep.setPartnerid(this.vpartnerid);
 			}else {
-				this.curExcep.getId().setPartnerid(this.vpartnerids);
+				this.curExcep.setPartnerid(this.vpartnerids);
 			}
 		LOG.info("Entering to save Account => {}", this.curExcep);
 		
-		Long companyId = new Long(this.curExcep.getId().getCompanyid());
+		Long companyId = new Long(this.curExcep.getCompanyid());
 		this.curExcep.setUserid(user.getUsername());
 		this.curExcep.setSegment1(getSegment1FromList(companyId));
 		this.curExcep.setUserid(user.getUsername());
 		
 		
-		
-		this.curExcep = service.save(curExcep);
-		this.lstexcep = service.findAll();
-		Functions.addInfoMessage("Succes", "Accounts saved");
-		PrimeFaces.current().executeScript("PF('" + getDialogName() + "').hide()");
-		PrimeFaces.current().ajax().update("form:messages", "form:" + getDataTableName());
-		PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+		try {
+				
+				this.curExcep = service.save(curExcep);
+				this.lstexcep = service.findAll();
+				Functions.addInfoMessage("Succes", "Accounts saved");
+				PrimeFaces.current().executeScript("PF('" + getDialogName() + "').hide()");
+				PrimeFaces.current().ajax().update("form:messages", "form:" + getDataTableName());
+				PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+		}catch (Exception e) {
+			LOG.error("save  Error -> {}", e.getMessage(), e);
+			Functions.addWarnMessage("Warning", "Record already exists!");
+			PrimeFaces.current().ajax().update("form:messages");
+		}
 	}
 
 	/**
@@ -246,6 +254,23 @@ public class HfmRollupExceptionsController {
 
 	public void setCurExcep(HfmRollupExceptions curExcep) {
 		this.curExcep = curExcep;
+		
+		if (this.curExcep.getSource().equals("Receivables")) {
+			lstCustno = servicecust.findByOrganizationid(this.curExcep.getCompanyid());
+			lstSuppno=null;
+			this.vpartnerid=this.curExcep.getPartnerid();
+			this.vpartnerids=0;
+		LOG.info("[setCurExcep]  return lstCustno con items => {}",
+				lstCustno != null ? lstCustno.size() : "is null");
+		
+		}else {
+			lstSuppno = servicessupp.findByOrganizationid(this.curExcep.getCompanyid());
+			lstCustno =null;
+			this.vpartnerids=this.curExcep.getPartnerid();
+			this.vpartnerid=0;
+			LOG.info("[setCurExcep]  return lstSuppno con items => {}",
+					lstSuppno != null ? lstSuppno.size() : "is null");
+		}
 	}
 
 	public List<HfmOracleAcc> getLstOrcl() {
@@ -364,17 +389,17 @@ public class HfmRollupExceptionsController {
 		try {
 			LOG.info("[companyidChange] => curExcep = {}", curExcep);
 
-			int lcompanyid = this.curExcep.getId().getCompanyid();
+			int lcompanyid = this.curExcep.getCompanyid();
 			Long compid = Long.valueOf(Integer.toString(lcompanyid));
 			
-			String costCenter = this.curExcep.getId().getCostcenter();
+			String costCenter = this.curExcep.getCostcenter();
 			LOG.info("[companyidChange] companyid  => {},costcenter  => {}", lcompanyid, costCenter);
 
 			lstOrcl = serviceOAS.findByOrgidAndCostcenter(lcompanyid, costCenter);
 			LOG.info("[companyidChange]  return lstOrcl con items => {}", lstOrcl != null ? lstOrcl.size() : "is null");
 			
 			
-			if (this.vsource.equals("Receivables")) {
+			if (this.curExcep.getSource().equals("Receivables")) {
 			lstCustno = servicecust.findByOrganizationid(lcompanyid);
 			lstSuppno=null;
 			LOG.info("[companyidChange]  return lstCustno con items => {}",
@@ -404,8 +429,8 @@ public class HfmRollupExceptionsController {
 
 	public void costcenterChange() {
 		try {
-			int companyId = this.curExcep.getId().getCompanyid();
-			String costCenter = this.curExcep.getId().getCostcenter();
+			int companyId = this.curExcep.getCompanyid();
+			String costCenter = this.curExcep.getCostcenter();
 			LOG.info("[costcenterChange] companyid  => {},costcenter  => {}", companyId, costCenter);
 			lstOrcl = serviceOAS.findByOrgidAndCostcenter(companyId, costCenter);
 

@@ -9,7 +9,7 @@ import com.neoris.tcl.models.SetMatchAccountsPK;
 
 public interface ISetMatchAccountsService {
 
-	Optional<SetMatchAccounts> findById(SetMatchAccountsPK id);
+	Optional<SetMatchAccounts> findById(Long id);
 
 	List<SetMatchAccounts> findAll();
 

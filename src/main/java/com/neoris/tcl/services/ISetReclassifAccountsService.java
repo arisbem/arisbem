@@ -9,7 +9,7 @@ import com.neoris.tcl.models.SetReclassifAccountsPK;
 
 public interface ISetReclassifAccountsService {
 
-	Optional<SetReclassifAccounts> findById(SetReclassifAccountsPK id);
+	Optional<SetReclassifAccounts> findById(Long id);
 
 	List<SetReclassifAccounts> findAll();
 

@@ -72,11 +72,11 @@ public class SetDefinedAccountsController {
 		if (lstcompany != null && lstcompany.size() > 0) {
 			this.lcompanyid = lstcompany.get(0).getCompanyid().intValue();
 		}
-		curtpAccs.getId().setCompanyid(lcompanyid);
-		curtpAccs.getId().setAccountid("0");
-		curtpAccs.getId().setAccountidfin("0");
+		curtpAccs.setCompanyid(lcompanyid);
+		curtpAccs.setAccountid("0");
+		curtpAccs.setAccountidfin("0");
 		
-		this.lsttpAccs = service.findByIdCompanyid(lcompanyid);
+		this.lsttpAccs = service.findByCompanyid(lcompanyid);
 
 		try {
 			LOG.info("Initializing Cost Centers...");
@@ -97,7 +97,7 @@ public class SetDefinedAccountsController {
 
 	public void openNew() {
 		this.curtpAccs = new SetDefinedAccounts();
-		this.curtpAccs.getId().setCompanyid(this.lcompanyid);
+		this.curtpAccs.setCompanyid(this.lcompanyid);
 		this.curtpAccs.setUserid(this.user.getUsername());
 		LOG.info("[openNew] => curtpAccs = {}", curtpAccs);
 
@@ -112,14 +112,22 @@ public class SetDefinedAccountsController {
 	public void save() {
 		LOG.info("Entering to save Accounting Accounts => {}", this.curtpAccs);
 		this.curtpAccs.setUserid(user.getUsername());
-		this.curtpAccs = service.save(curtpAccs);
-
-		this.lsttpAccs = service.findByIdCompanyid(this.lcompanyid);
-
-		Functions.addInfoMessage("Succes", "Accounting Accounts saved");
-		PrimeFaces.current().executeScript("PF('manageCodeDialog').hide()");
-		PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
-		PrimeFaces.current().ajax().update("form:messages");
+		
+		try {
+				
+			this.curtpAccs = service.save(curtpAccs);
+	
+			this.lsttpAccs = service.findByCompanyid(this.lcompanyid);
+	
+			Functions.addInfoMessage("Succes", "Accounting Accounts saved");
+			PrimeFaces.current().executeScript("PF('manageCodeDialog').hide()");
+			PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+			PrimeFaces.current().ajax().update("form:messages");
+		}catch (Exception e) {
+			LOG.error("init lstCC ERRor -> {}", e.getMessage(), e);
+			Functions.addWarnMessage("Warning", "Accounting Accounts already exists!");
+			PrimeFaces.current().ajax().update("form:messages");
+		}
 	}
 
 	public void delete(ActionEvent ev) {
@@ -137,7 +145,7 @@ public class SetDefinedAccountsController {
 		LOG.info("[delete] Entering to delete Accounting Accounts => {}", this.curtpAccs);
 		service.delete(this.curtpAccs);
 		this.curtpAccs = null;
-		this.lsttpAccs = service.findByIdCompanyid(this.lcompanyid);
+		this.lsttpAccs = service.findByCompanyid(this.lcompanyid);
 		Functions.addInfoMessage("Succes", "Code Removed");
 		PrimeFaces.current().ajax().update("form:messages");
 		PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
@@ -147,7 +155,7 @@ public class SetDefinedAccountsController {
 		LOG.info("[deleteSelected] = > Entering to delete Accounting Account: {}", this.lstSelectdAccs);
 		service.deleteAll(this.lstSelectdAccs);
 		this.lstSelectdAccs = null;
-		this.lsttpAccs = service.findByIdCompanyid(this.lcompanyid);
+		this.lsttpAccs = service.findByCompanyid(this.lcompanyid);
 		Functions.addInfoMessage("Succes", "Accounting Account Removed");
 		PrimeFaces.current().ajax().update("form:messages");
 		PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
@@ -214,13 +222,13 @@ public class SetDefinedAccountsController {
 			// this.lstCC = servcc.findAll();
 
 			LOG.info("**setCurtpAccs company  => {},costcenter  => {}, source {}",
-					this.curtpAccs.getId().getCompanyid(), this.curtpAccs.getId().getCostcenter(),
-					this.curtpAccs.getId().getSource());
+					this.curtpAccs.getCompanyid(), this.curtpAccs.getCostcenter(),
+					this.curtpAccs.getSource());
 
 			// LOG.info("current lstCC "+this.lstCC.size());
 
-			lstOrcl = serviceOAS.findByOrgidAndCostcenter(this.curtpAccs.getId().getCompanyid(),
-					this.curtpAccs.getId().getCostcenter());
+			lstOrcl = serviceOAS.findByOrgidAndCostcenter(this.curtpAccs.getCompanyid(),
+					this.curtpAccs.getCostcenter());
 			LOG.info("setCurtpAccs return lstOrcl con items => {}", lstOrcl != null ? lstOrcl.size() : "is null");
 
 		} catch (Exception e) {
@@ -277,8 +285,8 @@ public class SetDefinedAccountsController {
 	 */
 	public void companyidChange() {
 		try {
-			int companyId = curtpAccs.getId().getCompanyid();
-			String costCenter = this.curtpAccs.getId().getCostcenter();
+			int companyId = curtpAccs.getCompanyid();
+			String costCenter = this.curtpAccs.getCostcenter();
 
 			LOG.info("companyidChange company  => {},costcenter  => {}", companyId, costCenter);
 			this.lstOrcl = serviceOAS.findByOrgidAndCostcenter(companyId, costCenter);
@@ -304,10 +312,10 @@ public class SetDefinedAccountsController {
 	 * 
 	 */
 	public void companyidChangeorcl() {
-		// this.lcompanyid = this.curtpAccs.getId().getCompanyid();
+		// this.lcompanyid = this.curtpAccs.getCompanyid();
 		try {
 			LOG.info("[companyidChangeorcl] company  => {}", this.lcompanyid);
-			this.lsttpAccs = service.findByIdCompanyid(this.lcompanyid);
+			this.lsttpAccs = service.findByCompanyid(this.lcompanyid);
 			LOG.info("[companyidChangeorcl] lsttpAccs " + this.lsttpAccs.size());
 		} catch (Exception e) {
 			LOG.error("[companyidChangeorcl] Exception: -> {}", e.getMessage());
@@ -332,8 +340,8 @@ public class SetDefinedAccountsController {
 	 */
 	public void costcenterChange() {
 		try {
-			int companyId = curtpAccs.getId().getCompanyid();
-			String costCenter = this.curtpAccs.getId().getCostcenter();
+			int companyId = curtpAccs.getCompanyid();
+			String costCenter = this.curtpAccs.getCostcenter();
 			LOG.info("[costcenterChange] companyid  => {},costcenter  => {}", companyId, costCenter);
 			lstOrcl = serviceOAS.findByOrgidAndCostcenter(companyId, costCenter);
 

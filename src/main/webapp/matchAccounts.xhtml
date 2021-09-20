@@ -74,12 +74,12 @@
 					<p:column headerText="Select" selectionMode="multiple" exportable="false" width="10%">
 					</p:column>
 
-					<p:column headerText="Master Account" sortBy="#{currentid.id.hfmparent}" filterBy="#{currentid.id.hfmparent}">
-						<h:outputText value="#{currentid.id.hfmparent}" />
+					<p:column headerText="Master Account" sortBy="#{currentid.hfmparent}" filterBy="#{currentid.hfmparent}">
+						<h:outputText value="#{currentid.hfmparent}" />
 					</p:column>
 
-					<p:column headerText="Child Account"  sortBy="#{currentid.id.hfmchild}" filterBy="#{currentid.id.hfmchild}">
-						<h:outputText value="#{currentid.id.hfmchild}" />
+					<p:column headerText="Child Account"  sortBy="#{currentid.hfmchild}" filterBy="#{currentid.hfmchild}">
+						<h:outputText value="#{currentid.hfmchild}" />
 					</p:column>
 
 					<p:column headerText="Sign"  sortBy="#{currentid.sign}" filterBy="#{currentid.sign}">
@@ -125,7 +125,7 @@
 							<div class="p-field p-col-12 p-md-4">
 								<p:outputLabel for="maccount" value="Master Account" />
 								<p:selectOneMenu id="maccount"
-									value="#{matchaccountsControllerBean.currmatch.id.hfmparent}"  filter="true" filterMatchMode="startsWith">
+									value="#{matchaccountsControllerBean.currmatch.hfmparent}"  filter="true" filterMatchMode="startsWith">
 									<f:selectItem itemLabel="Select One" itemValue="" />
 									<f:selectItems value="#{hfmControllerBean.lstHfmcodes}"
 										var="itemm" 
@@ -136,7 +136,7 @@
 							<div class="p-field p-col-12 p-md-4">
 								<p:outputLabel for="chaccount" value="Child Account" />
 								<p:selectOneMenu id="chaccount"
-									value="#{matchaccountsControllerBean.currmatch.id.hfmchild}"  filter="true" filterMatchMode="startsWith">
+									value="#{matchaccountsControllerBean.currmatch.hfmchild}"  filter="true" filterMatchMode="startsWith">
 									<f:selectItem itemLabel="Select One" itemValue="" />
 									<f:selectItems value="#{hfmControllerBean.lstHfmcodes}"
 										var="itemc" 

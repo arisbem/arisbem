@@ -49,18 +49,25 @@ private final static Logger LOG = LoggerFactory.getLogger(MatchAccountsControlle
 	
 	public void openNew() {
         this.currmatch = new SetMatchAccounts();
+       
 	}
 	
 	
 	public void save() {
-		this.currmatch.setUserid(user.getUsername());
-        LOG.info("Entering to save Macth Accounts  => {}", this.currmatch);
-        this.currmatch = service.save(currmatch);
-        this.lstMatchAcc = service.findAll();
-        Functions.addInfoMessage("Succes", "Account saved");
-        PrimeFaces.current().executeScript("PF('" + getDialogName() + "').hide()");
-        PrimeFaces.current().ajax().update("form:messages", "form:" + getDataTableName());
-        PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+		try {
+			this.currmatch.setUserid(user.getUsername());
+	        LOG.info("Entering to save Macth Accounts  => {}", this.currmatch);
+	        this.currmatch = service.save(currmatch);
+	        this.lstMatchAcc = service.findAll();
+	        Functions.addInfoMessage("Succes", "Account saved");
+	        PrimeFaces.current().executeScript("PF('" + getDialogName() + "').hide()");
+	        PrimeFaces.current().ajax().update("form:messages", "form:" + getDataTableName());
+	        PrimeFaces.current().executeScript("PF('dtCodes').clearFilters()");
+		}catch (Exception e) {
+			LOG.error("save  Error -> {}", e.getMessage(), e);
+			Functions.addWarnMessage("Warning", "Accounting already exists!");
+			PrimeFaces.current().ajax().update("form:messages");
+		}
     }
     
     public void delete() {

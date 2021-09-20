@@ -6,12 +6,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 /**
  * The persistent class for the set_match_accounts database table.
@@ -26,41 +28,90 @@ public class SetMatchAccounts implements Serializable {
 	 */
 	private static final long serialVersionUID = 2750715160416744318L;
 
-	@EmbeddedId
-	private SetMatchAccountsPK id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id")
+	@SequenceGenerator(sequenceName = "SEQMATCHACC", allocationSize = 1, name = "id")
+	private Long id;
 	private String sign;
 	private String userid;
 	@Column(name = "modified",columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false)
 	@Temporal(TemporalType.DATE)
 	private Date modified;
 	
-	@Transient
-	private String uuid;
+	private String hfmchild;
+
+	private String hfmparent;
 
 	public SetMatchAccounts() {
-	    this.setId(new SetMatchAccountsPK());
-	    this.uuid = UUID.randomUUID().toString();
+	   
 	}
 
 	
 
-	public SetMatchAccounts(SetMatchAccountsPK id, String sign, String userid) {
-		
+
+	public SetMatchAccounts(Long id, String sign, String userid, Date modified, String hfmchild, String hfmparent) {
+	
 		this.id = id;
 		this.sign = sign;
 		this.userid = userid;
+		this.modified = modified;
+		this.hfmchild = hfmchild;
+		this.hfmparent = hfmparent;
 	}
 
 
 
-	public SetMatchAccountsPK getId() {
-		return this.id;
+
+
+
+	public String getHfmchild() {
+		return hfmchild;
 	}
 
-	public void setId(SetMatchAccountsPK id) {
+
+
+
+
+
+	public void setHfmchild(String hfmchild) {
+		this.hfmchild = hfmchild;
+	}
+
+
+
+
+
+
+	public String getHfmparent() {
+		return hfmparent;
+	}
+
+
+
+
+
+
+	public void setHfmparent(String hfmparent) {
+		this.hfmparent = hfmparent;
+	}
+
+
+
+
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public void setId(Long id) {
 		this.id = id;
 	}
+
+
 
 	public String getSign() {
 		return this.sign;
@@ -90,16 +141,9 @@ public class SetMatchAccounts implements Serializable {
 
 
 
-	public String getUuid() {
-		return uuid;
-	}
-
-
-
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, uuid);
+		return Objects.hash(id);
 	}
 
 
@@ -113,15 +157,18 @@ public class SetMatchAccounts implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		SetMatchAccounts other = (SetMatchAccounts) obj;
-		return Objects.equals(id, other.id) && Objects.equals(uuid, other.uuid);
+		return Objects.equals(id, other.id);
 	}
+
+
+
 
 
 
 	@Override
 	public String toString() {
 		return "SetMatchAccounts [id=" + id + ", sign=" + sign + ", userid=" + userid + ", modified=" + modified
-				+ ", uuid=" + uuid + "]";
+				+ ", hfmchild=" + hfmchild + ", hfmparent=" + hfmparent + "]";
 	}
 
 
